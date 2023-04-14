@@ -1,8 +1,35 @@
-import { Button, Form, Row, Col } from "react-bootstrap";
+import { Button, Form, Row, Col, Alert } from "react-bootstrap";
+import useCategorias from "../hooks/useCategorias";
+import useBebidas from "../hooks/useBebidas";
+import { useState } from "react";
 
 export const Formulario = () => {
+  const [busqueda, setBusqueda] = useState({
+    nombre: "",
+    categoria: "",
+  });
+
+  const [alerta, setAlerta] = useState("");
+  const { categorias } = useCategorias();
+  const { consultarBebidas } = useBebidas();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (Object.values(busqueda).includes("")) {
+      setAlerta("Todos los campos son obligatorios.");
+      return;
+    }
+    setAlerta("");
+    consultarBebidas(busqueda);
+  };
+
   return (
-    <Form>
+    <Form onSubmit={handleSubmit}>
+      {alerta && (
+        <Alert variant="danger" className="text-center">
+          {alerta}
+        </Alert>
+      )}
       <Row>
         <Col md={6}>
           <Form.Group className="mb-3">
@@ -12,16 +39,54 @@ export const Formulario = () => {
               placeholder="Ej. Margarita"
               id="nombre"
               name="nombre"
+              autoComplete="off"
+              value={busqueda.nombre}
+              onChange={(e) => {
+                setBusqueda({
+                  ...busqueda,
+                  [e.target.name]: e.target.value,
+                });
+              }}
             />
           </Form.Group>
         </Col>
         <Col md={6}>
           <Form.Group className="mb-3">
             <Form.Label htmlFor="categoria">Categoría</Form.Label>
-            <Form.Select id="categoria" name="categoria">
+            <Form.Select
+              id="categoria"
+              name="categoria"
+              value={busqueda.categoria}
+              onChange={(e) => {
+                setBusqueda({
+                  ...busqueda,
+                  [e.target.name]: e.target.value,
+                });
+              }}
+            >
               <option value="">Seleccione una categoría</option>
+              {categorias.map((categoria) => (
+                <option
+                  key={categoria.strCategory}
+                  value={categoria.strCategory}
+                >
+                  {categoria.strCategory}
+                </option>
+              ))}
             </Form.Select>
           </Form.Group>
+        </Col>
+      </Row>
+
+      <Row className="justify-content-end">
+        <Col md={3}>
+          <Button
+            variant="danger"
+            className="text-uppercase w-100"
+            type="submit"
+          >
+            Buscar bebidas
+          </Button>
         </Col>
       </Row>
     </Form>
