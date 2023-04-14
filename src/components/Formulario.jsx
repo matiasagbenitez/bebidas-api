@@ -82,7 +82,7 @@ export const Formulario = () => {
         <Col md={3}>
           <Button
             variant="danger"
-            className="text-uppercase w-100"
+            className="text-uppercase w-100 mb-3"
             type="submit"
           >
             Buscar bebidas
